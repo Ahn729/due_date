@@ -2,15 +2,16 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from django.db.models import Model, DateField, CharField, IntegerField
+from django.urls import reverse
 
-class DueAction(Model):
+class ToDo(Model):
     """An action that is due to be performed on a regular basis."""
 
     EXEC_INTERVALS = (
-        ('d', 'daily'),
-        ('w', 'weekly'),
-        ('m', 'monthly'),
-        ('y', 'yearly')
+        ('d', 'day'),
+        ('w', 'week'),
+        ('m', 'month'),
+        ('y', 'year')
     )
 
     name = CharField(help_text="Name the action that has to be done",
@@ -27,6 +28,9 @@ class DueAction(Model):
 
     class Meta:
         ordering = ['-first_exec_date']
+
+    def get_absolute_url(self):
+        return reverse('todo-detail', args=[str(self.id)])
 
     def __str__(self):
         return self.name

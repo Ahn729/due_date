@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Upcoming ToDos</h1>
+  {% if todo_list %}
+  <ul>
+    {% for todo in todo_list %}
+      <li>
+        <p class="{% if todo.is_overdue %}text-danger{% endif %}">{{ todo.next_exec_date }}
+        <a href="{{ todo.get_absolute_url }}">{{ todo.name }}</a></p>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no ToDos. Relax and have fun!</p>
+  {% endif %}
+{% endblock %}

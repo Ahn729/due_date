@@ -1,0 +1,10 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>ToDo: {{ todo.name }}</h1>
+
+  <p><strong>Executed for the first time:</strong> {{ todo.first_exec_date }}</p>
+  <p><strong>Executed last time on:</strong> {{ todo.last_exec_date }}</p>
+  <p class="{% if todo.is_overdue %}text-danger{% endif %}"><strong>Next execution due on:</strong> {{ todo.next_exec_date }}</p>
+  <p><strong>This ToDo is due every</strong> {{ todo.exec_frequency }} {{ todo.get_exec_interval_display }}{% if todo.exec_frequency == 1 %}{% else %}s{% endif %}.</p>
+{% endblock %}

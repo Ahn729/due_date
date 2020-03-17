@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block title %}
+<title>Welcome to Due Date main page</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Due Date Home</h1>
+  <p>You have previously visited this page {{ num_visits }}
+    {% if num_visits == 1 %}
+     time.
+    {% else %}
+    times.
+    {% endif %}
+   </p>
+{% endblock %}
