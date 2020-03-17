@@ -2,9 +2,18 @@
 
 {% block content %}
   <h1>ToDo: {{ todo.name }}</h1>
-
+  <p><i>{{ todo.name }} is due every{% if todo.exec_frequency == 1 %}{% else %} {{ todo.exec_frequency }}{% endif %} {{ todo.get_exec_interval_display }}{% if todo.exec_frequency == 1 %}{% else %}s{% endif %}.</i></p>
+  <hr>
   <p><strong>Executed for the first time:</strong> {{ todo.first_exec_date }}</p>
   <p><strong>Executed last time on:</strong> {{ todo.last_exec_date }}</p>
   <p class="{% if todo.is_overdue %}text-danger{% endif %}"><strong>Next execution due on:</strong> {{ todo.next_exec_date }}</p>
-  <p><strong>This ToDo is due every</strong> {{ todo.exec_frequency }} {{ todo.get_exec_interval_display }}{% if todo.exec_frequency == 1 %}{% else %}s{% endif %}.</p>
+  <hr>
+  <i>Did you just do this? Great! Please enter the date you did it:</i>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form.done_date }}
+    <input type="submit" value="Done!">
+    <br>
+   {{ form.done_date.errors }}
+  </form>
 {% endblock %}
