@@ -5,21 +5,31 @@ from django.views.generic import CreateView, DeleteView
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import DoToDoForm
 from .models import ToDo
 
 # Create your views here.
 
+@login_required
 def index(request):
     num_todos = ToDo.objects.count()
+    current_user_name = request.user.username
+    num_own_todos = ToDo.objects.filter(users_responsible__username=current_user_name).count()
     # This will be slow if there are many objects (see below).
-    num_todos_due =len([x for x in ToDo.objects.all() if x.next_exec_date() < date.today()])
+    num_todos_due = len([x for x in ToDo.objects.all() if x.next_exec_date() < date.today()])
+    num_own_todos_due = len([
+        x for x in ToDo.objects.filter(users_responsible__username=current_user_name).all()
+        if x.next_exec_date() < date.today()
+    ])
 
-    context = {'num_todos': num_todos, 'num_todos_due': num_todos_due}
+    context = {'num_todos': num_todos, 'num_todos_due': num_todos_due,
+               'num_own_todos': num_own_todos, 'num_own_todos_due': num_own_todos_due}
     return render(request, "index.html", context)
 
-
+@login_required
 def todo_list_view(request):
     paginate_by = 5
     # Cannot use standard 'order_by' here as we're ordering by a Python Function
@@ -36,6 +46,7 @@ def todo_list_view(request):
     context = {'todo_list': page_obj, 'page_obj': page_obj, 'is_paginated': is_paginated}
     return render(request, "due_date/todo_list.html", context=context)
 
+@login_required
 def todo_list_detail(request, pk):
     todo = get_object_or_404(ToDo, pk=pk)
 
@@ -62,7 +73,8 @@ def todo_list_detail(request, pk):
 
     return render(request, 'due_date/todo_detail.html', context=context)
 
-class ToDoCreate(CreateView):
+# LoginRequiredMixin must go first
+class ToDoCreate(LoginRequiredMixin, CreateView):
     model = ToDo
     fields = '__all__'
     success_url = reverse_lazy('todos')
@@ -75,6 +87,7 @@ class ToDoCreate(CreateView):
             return self.form_invalid(form)
         return super().form_valid(form)
 
-class ToDoDelete(DeleteView):
+# LoginRequiredMixin must go first
+class ToDoDelete(LoginRequiredMixin, DeleteView):
     model = ToDo
     success_url = reverse_lazy('todos')

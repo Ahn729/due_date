@@ -1,9 +1,14 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
-from django.db.models import Model, DateField, CharField, IntegerField
+from django.db.models import Model, DateField, CharField, IntegerField, ManyToManyField
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+
+def validate_positive(value):
+    if value <= 0:
+        raise ValidationError(f"Value must be a positive integer.")
 
 class ToDo(Model):
     """An action that is due to be performed on a regular basis."""
@@ -14,10 +19,6 @@ class ToDo(Model):
         ('m', 'month'),
         ('y', 'year')
     )
-
-    def validate_positive(value):
-        if value <= 0:
-            raise ValidationError(f"Value must be a positive integer.")
 
     name = CharField(help_text="Name the action that has to be done",
                      max_length=100)
@@ -31,6 +32,7 @@ class ToDo(Model):
                               max_length=1,
                               choices=EXEC_INTERVALS,
                               default='w')
+    users_responsible = ManyToManyField(to=User, help_text="Who is responsible for doing this?")
 
     class Meta:
         ordering = ['-first_exec_date']

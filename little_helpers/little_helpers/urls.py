@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('due_date/', include('due_date.urls')),
     path('', RedirectView.as_view(url='due_date/')),
+    path('accounts/', include('django.contrib.auth.urls')),
     # Fun fact: static does not return a single ulrpattern, but a list of such.
     # You can eiterh append it to the list ( + ...) or use the asterisk (*).
     *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

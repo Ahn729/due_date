@@ -3,6 +3,11 @@
 {% block content %}
   <h1>ToDo: {{ todo.name }}</h1>
   <p><i>{{ todo.name }} is due every{% if todo.exec_frequency == 1 %}{% else %} {{ todo.exec_frequency }}{% endif %} {{ todo.get_exec_interval_display }}{% if todo.exec_frequency == 1 %}{% else %}s{% endif %}.</i></p>
+  <p><i>Users responsible:
+    {% for user in todo.users_responsible.all %}
+    {{ user.get_username }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  </i></p>
   <hr>
   <p><strong>Executed for the first time:</strong> {{ todo.first_exec_date }}</p>
   <p><strong>Executed last time on:</strong> {{ todo.last_exec_date }}</p>
