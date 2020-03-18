@@ -8,12 +8,18 @@
   <p><strong>Executed last time on:</strong> {{ todo.last_exec_date }}</p>
   <p class="{% if todo.is_overdue %}text-danger{% endif %}"><strong>Next execution due on:</strong> {{ todo.next_exec_date }}</p>
   <hr>
-  <i>Did you just do this? Great! Please enter the date you did it:</i>
-  <form action="" method="post">
-    {% csrf_token %}
-    {{ form.done_date }}
-    <input type="submit" value="Done!">
-    <br>
-   {{ form.done_date.errors }}
-  </form>
+  <h3>Actions</h3>
+  <p>
+    <i>Did you just do this? Great! Please enter the date you did it:</i>
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ form.done_date }}
+      <input type="submit" value="Done!">
+      <br>
+      {{ form.done_date.errors }}
+    </form>
+  </p>
+  <p>
+    <i>No need to do this any more? You might as well <a href="{% url 'todo-delete' todo.pk %}">delete</a> this action item.</i>
+  </p>
 {% endblock %}

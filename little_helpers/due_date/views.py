@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DeleteView
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -74,3 +74,7 @@ class ToDoCreate(CreateView):
             form.add_error(None, 'You must specify either first or last exec date')
             return self.form_invalid(form)
         return super().form_valid(form)
+
+class ToDoDelete(DeleteView):
+    model = ToDo
+    success_url = reverse_lazy('todos')

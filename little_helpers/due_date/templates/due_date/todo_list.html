@@ -6,8 +6,9 @@
   <ul>
     {% for todo in todo_list %}
       <li class="{% if todo.is_overdue %}text-danger{% endif %}">
-        {{ todo.next_exec_date }}
+        {{ todo.next_exec_date }}:
         <a href="{{ todo.get_absolute_url }}">{{ todo.name }}</a>
+      &middot; <a href="{% url 'todo-delete' todo.pk %}"><i>Delete</i></a></li>
     {% endfor %}
   </ul>
   {% else %}
