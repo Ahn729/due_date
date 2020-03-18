@@ -6,11 +6,5 @@
 
 {% block content %}
   <h1>Due Date Home</h1>
-  <p>You have previously visited this page {{ num_visits }}
-    {% if num_visits == 1 %}
-     time.
-    {% else %}
-    times.
-    {% endif %}
-   </p>
+  <p>You have <a href="{% url 'todos' %}">{{ num_todos }} ToDos</a>; {{ num_todos_due }} due today.</p>
 {% endblock %}

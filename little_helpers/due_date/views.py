@@ -1,8 +1,10 @@
 from datetime import date
 
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import CreateView
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 
 from .forms import DoToDoForm
 from .models import ToDo
@@ -10,7 +12,12 @@ from .models import ToDo
 # Create your views here.
 
 def index(request):
-    return render(request, "index.html")
+    num_todos = ToDo.objects.count()
+    # This will be slow if there are many objects (see below).
+    num_todos_due =len([x for x in ToDo.objects.all() if x.next_exec_date() < date.today()])
+
+    context = {'num_todos': num_todos, 'num_todos_due': num_todos_due}
+    return render(request, "index.html", context)
 
 
 def todo_list_view(request):
@@ -54,3 +61,16 @@ def todo_list_detail(request, pk):
     }
 
     return render(request, 'due_date/todo_detail.html', context=context)
+
+class ToDoCreate(CreateView):
+    model = ToDo
+    fields = '__all__'
+    success_url = reverse_lazy('todos')
+
+    # you really shouldn't do this [validate] in form_valid at all. form_valid()
+    # is not what it's for. The right place to do this is validate using clean()
+    def form_valid(self, form):
+        if not form.cleaned_data['first_exec_date'] and not form.cleaned_data['last_exec_date']:
+            form.add_error(None, 'You must specify either first or last exec date')
+            return self.form_invalid(form)
+        return super().form_valid(form)
