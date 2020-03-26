@@ -1,8 +1,6 @@
 from datetime import date
 
-from rest_framework import status
-from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
@@ -15,9 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import DoToDoForm
 from .models import ToDo
-from .serializers import ToDoSerializer, DoneDateSerializer
-
-# Create your views here.
+from .serializers import ToDoSerializer, DoToDoSerializer
 
 @login_required
 def index(request):
@@ -105,14 +101,22 @@ class ToDoDelete(LoginRequiredMixin, DeleteView):
 class ToDoViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows todos to be viewed or created.
+
+    GET: Displays all ToDos
+    POST: Creates new ToDo
     """
     queryset = ToDo.objects.all()
     serializer_class = ToDoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+# Default Permissions for API are defined in settings.py module
 @api_view(['GET', 'PUT'])
 def todo_detail(request, pk):
-    """API endpoint to get single todo or update its last exec date"""
+    """API endpoint to get single todo or update its last exec date
+
+    GET: Displays single ToDo
+    PUT: Updates last exec date
+    """
 
     todo = get_object_or_404(ToDo, pk=pk)
     if request.method == 'GET':
@@ -120,7 +124,7 @@ def todo_detail(request, pk):
         return Response(data=serializer.data)
 
     if request.method == 'PUT':
-        serializer = DoneDateSerializer(todo, data=request.data)
+        serializer = DoToDoSerializer(todo, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(ToDoSerializer(todo).data)

@@ -11,7 +11,7 @@ class ToDoSerializer(serializers.ModelSerializer):
         model = ToDo
         fields = '__all__'
 
-class DoneDateSerializer(serializers.Serializer):
+class DoToDoSerializer(serializers.Serializer):
     last_exec_date = serializers.DateField(required=True)
 
     def create(self, validated_data):
