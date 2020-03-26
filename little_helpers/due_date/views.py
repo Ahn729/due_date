@@ -1,5 +1,10 @@
 from datetime import date
 
+from rest_framework import status
+from rest_framework import viewsets
+from rest_framework import permissions
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import CreateView, DeleteView
 from django.core.paginator import Paginator
@@ -10,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import DoToDoForm
 from .models import ToDo
+from .serializers import ToDoSerializer, DoneDateSerializer
 
 # Create your views here.
 
@@ -48,10 +54,10 @@ def todo_list_view(request):
 
 @login_required
 def todo_list_detail(request, pk):
+    """Gets a todo or updates last exec date"""
     todo = get_object_or_404(ToDo, pk=pk)
 
     if request.method == 'POST':
-
         # Create form instance bound to data from POST request
         form = DoToDoForm(request.POST)
         if form.is_valid():
@@ -91,3 +97,31 @@ class ToDoCreate(LoginRequiredMixin, CreateView):
 class ToDoDelete(LoginRequiredMixin, DeleteView):
     model = ToDo
     success_url = reverse_lazy('todos')
+
+###
+# REST rest_framework views
+###
+
+class ToDoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows todos to be viewed or created.
+    """
+    queryset = ToDo.objects.all()
+    serializer_class = ToDoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+@api_view(['GET', 'PUT'])
+def todo_detail(request, pk):
+    """API endpoint to get single todo or update its last exec date"""
+
+    todo = get_object_or_404(ToDo, pk=pk)
+    if request.method == 'GET':
+        serializer = ToDoSerializer(todo)
+        return Response(data=serializer.data)
+
+    if request.method == 'PUT':
+        serializer = DoneDateSerializer(todo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(ToDoSerializer(todo).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

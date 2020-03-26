@@ -23,6 +23,13 @@
         </ul>
         <hr>
         <ul class="sidebar-nav">
+          <li><a href="{% url 'api-root' %}">API</a></li>
+          <ul>
+            <li><a href="{% url 'api-todo-list' %}">ToDos</a></li>
+          </ul>
+        </ul>
+        <hr>
+        <ul class="sidebar-nav">
         {% if user.is_authenticated %}
           <li>Logged in as {{ user.get_username }}<br></li>
           <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
