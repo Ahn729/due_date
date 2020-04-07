@@ -1,12 +1,16 @@
 from datetime import date
 
 from rest_framework import serializers
+from rest_framework.fields import ReadOnlyField
 from django.utils.translation import ugettext_lazy as _
 
 from .models import ToDo
 
 
 class ToDoSerializer(serializers.ModelSerializer):
+    # source is same as field name if none is given
+    next_exec_date = ReadOnlyField()
+
     class Meta:
         model = ToDo
         fields = '__all__'
